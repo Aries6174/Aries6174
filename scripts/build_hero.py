@@ -10,6 +10,8 @@ line too: each is filled by a maze, and walking around the walls of a maze visit
 square once and comes back to the start. Both lines are given the same number of points,
 so SVG can slide each point from its place in the dragon to its place in the letters.
 
+After a pause on AJS, everything plays backward to the single line, and the cycle repeats.
+
 Only two paths are visible at any moment, so it stays light even with thousands of lines.
 Everything is plain SVG with SMIL animation, which GitHub shows in a README image.
 
@@ -45,13 +47,14 @@ MUTED = "#7d705d"
 INK = "#0b0805"
 LINE = "#5a4325"
 
-# Seconds for each fold, a pause on the finished dragon, and a fade before it starts again.
+# Seconds for each fold. The cycle opens on a single line, folds, becomes AJS, holds,
+# then plays the same way back, so it ends on the single line it started from.
 def fold_time(k):
     return 0.55 if k <= 4 else 0.8 if k <= 8 else 1.05
 
 
+START = 0.8
 HOLD = 3.2
-FADE = 0.8
 # A short pause on the finished dragon, then the time it takes to become the letters.
 SETTLE = 1.0
 MORPH = 2.8
@@ -239,19 +242,62 @@ def font_face(family, path, text):
 
 
 def build():
+    """The whole cycle plays forward to AJS, holds, then plays backward to a single line.
+
+    Every animation is written once as a list of (seconds, value) moments up to the
+    middle of the cycle. `mirror` adds the same moments in reverse after the middle,
+    so the return trip is the forward trip played backward and the loop has no seam.
+    """
     curves = dragon(FOLDS)
-    starts = []
-    t = 0.0
+    starts, t = [], START
     for k in range(1, FOLDS + 1):
         starts.append(t)
         t += fold_time(k)
     folded_at = t
     morph_start = folded_at + SETTLE
     morph_end = morph_start + MORPH
-    total = morph_end + HOLD + FADE
+    middle = morph_end + HOLD / 2
+    total = 2 * middle
 
-    def at(seconds):
-        return f"{min(max(seconds / total, 0), 1):.5f}"
+    def mirror(moments):
+        """The moments, then the same moments backward from the end of the cycle."""
+        back = [(total - seconds, value) for seconds, value in reversed(moments)]
+        return moments + [m for m in back if m[0] > moments[-1][0]]
+
+    def key_times(moments):
+        return ";".join(f"{seconds / total:.5f}" for seconds, _ in moments)
+
+    def eased(attribute, moments, kind=None):
+        """Smooth movement between moments, as `animate` or `animateTransform`."""
+        moments = mirror(moments)
+        if moments[0][0] > 0:
+            moments = [(0, moments[0][1])] + moments
+        if moments[-1][0] < total:
+            moments = moments + [(total, moments[-1][1])]
+        tag = "animateTransform" if kind else "animate"
+        kind_attr = f' type="{kind}"' if kind else ""
+        splines = ";".join(".5 0 .5 1" for _ in moments[1:])
+        return (
+            f'<{tag} attributeName="{attribute}"{kind_attr} dur="{total:.2f}s" repeatCount="indefinite" '
+            f'keyTimes="{key_times(moments)}" values="{";".join(str(v) for _, v in moments)}" '
+            f'calcMode="spline" keySplines="{splines}"/>'
+        )
+
+    def shown(start, end):
+        """Visible from start to end going forward, and for the same stretch coming back."""
+        moments = [(0, 0)] if start > 0 else []
+        if end >= total / 2:
+            # Visible across the middle: one stretch, from start to its mirror.
+            moments += [(start, 1), (total - start, 0)]
+        else:
+            moments += [(start, 1), (end, 0), (total - end, 1), (total - start, 0)]
+        moments = [m for m in moments if m[0] < total]
+        if moments[0][0] > 0:
+            moments = [(0, 0)] + moments
+        return (
+            f'<animate attributeName="opacity" dur="{total:.2f}s" repeatCount="indefinite" calcMode="discrete" '
+            f'keyTimes="{key_times(moments)}" values="{";".join(str(v) for _, v in moments)}"/>'
+        )
 
     layers = []
     for k in range(1, FOLDS + 1):
@@ -259,40 +305,21 @@ def build():
         begin = starts[k - 1]
         end = begin + fold_time(k)
         last = k == FOLDS
-        hide = morph_start if last else end
         ex, ey = base[-1]
         s0, x0, y0 = camera(base)
         s1, x1, y1 = camera(curves[k])
-        # Visible only for its own fold, except the last one, which stays for the pause.
-        visible = (
-            f'<animate attributeName="opacity" dur="{total:.2f}s" repeatCount="indefinite" calcMode="discrete" '
-            f'keyTimes="0;{at(begin)};{at(hide)}" values="0;1;0"/>'
-        )
-        move = (
-            f'<animateTransform attributeName="transform" type="translate" dur="{total:.2f}s" repeatCount="indefinite" '
-            f'keyTimes="0;{at(begin)};{at(end)};1" values="{x0:.2f} {y0:.2f};{x0:.2f} {y0:.2f};{x1:.2f} {y1:.2f};{x1:.2f} {y1:.2f}" '
-            f'calcMode="spline" keySplines="0 0 1 1;.45 0 .25 1;0 0 1 1"/>'
-        )
-        zoom = (
-            f'<animateTransform attributeName="transform" type="scale" dur="{total:.2f}s" repeatCount="indefinite" '
-            f'keyTimes="0;{at(begin)};{at(end)};1" values="{s0:.4f};{s0:.4f};{s1:.4f};{s1:.4f}" '
-            f'calcMode="spline" keySplines="0 0 1 1;.45 0 .25 1;0 0 1 1"/>'
-        )
-        swing = (
-            f'<animateTransform attributeName="transform" type="rotate" dur="{total:.2f}s" repeatCount="indefinite" '
-            f'keyTimes="0;{at(begin)};{at(end)};1" values="0 {ex} {ey};0 {ex} {ey};-90 {ex} {ey};-90 {ex} {ey}" '
-            f'calcMode="spline" keySplines="0 0 1 1;.45 0 .25 1;0 0 1 1"/>'
-        )
-        # The new half is brighter while it swings, then settles to gold.
-        settle = (
-            f'<animate attributeName="stroke" dur="{total:.2f}s" repeatCount="indefinite" '
-            f'keyTimes="0;{at(begin)};{at(end)};1" values="{BRIGHT};{BRIGHT};{GOLD if last else BRIGHT};{GOLD if last else BRIGHT}"/>'
-        )
+        # The first fold is visible from the very start, so the cycle opens on a single line.
+        visible_from = 0 if k == 1 else begin
+        visible_to = morph_start if last else end
         layers.append(
-            f'<g opacity="0">{visible}<g>{move}<g>{zoom}'
+            f'<g opacity="0">{shown(visible_from, visible_to)}'
+            f'<g>{eased("transform", [(begin, f"{x0:.2f} {y0:.2f}"), (end, f"{x1:.2f} {y1:.2f}")], "translate")}'
+            f'<g>{eased("transform", [(begin, f"{s0:.4f}"), (end, f"{s1:.4f}")], "scale")}'
             f'<path id="c{k}" d="{path_data(base)}" vector-effect="non-scaling-stroke"/>'
-            f'<use href="#c{k}" stroke="{BRIGHT}" vector-effect="non-scaling-stroke">{swing}{settle}</use>'
-            f"</g></g></g>"
+            f'<use href="#c{k}" stroke="{BRIGHT}" vector-effect="non-scaling-stroke">'
+            f'{eased("transform", [(begin, f"0 {ex} {ey}"), (end, f"-90 {ex} {ey}")], "rotate")}'
+            f'{eased("stroke", [(begin, BRIGHT), (end, GOLD if last else BRIGHT)])}'
+            f"</use></g></g></g>"
         )
 
     # The finished dragon in stage pixels, and AJS with the same number of points.
@@ -302,37 +329,28 @@ def build():
     letters_line = match_length(word_line(len(dragon_line)), len(dragon_line))
     start_d, end_d = relative_path(dragon_line), relative_path(letters_line)
     layers.append(
-        f'<path d="{start_d}" opacity="0">'
-        f'<animate attributeName="opacity" dur="{total:.2f}s" repeatCount="indefinite" calcMode="discrete" '
-        f'keyTimes="0;{at(morph_start)}" values="0;1"/>'
-        f'<animate attributeName="d" dur="{total:.2f}s" repeatCount="indefinite" '
-        f'keyTimes="0;{at(morph_start)};{at(morph_end)};1" values="{start_d};{start_d};{end_d};{end_d}" '
-        f'calcMode="spline" keySplines="0 0 1 1;.6 0 .3 1;0 0 1 1"/>'
-        f'<animate attributeName="stroke" dur="{total:.2f}s" repeatCount="indefinite" '
-        f'keyTimes="0;{at(morph_start)};{at(morph_end)};1" values="{GOLD};{BRIGHT};{GOLD};{GOLD}"/>'
+        f'<path d="{start_d}" opacity="0">{shown(morph_start, middle)}'
+        f'{eased("d", [(morph_start, start_d), (morph_end, end_d)])}'
+        f'{eased("stroke", [(morph_start, BRIGHT), (morph_end, GOLD)])}'
         f"</path>"
     )
 
     counters = []
     for k in range(1, FOLDS + 1):
-        begin = starts[k - 1]
-        hide = total if k == FOLDS else starts[k]
+        begin = 0 if k == 1 else starts[k - 1]
+        hide = middle if k == FOLDS else starts[k]
         counters.append(
             f'<text x="56" y="214" font-family="Display" font-size="96" letter-spacing="4" fill="{PALE}" opacity="0">{k:02d}'
-            f'<animate attributeName="opacity" dur="{total:.2f}s" repeatCount="indefinite" calcMode="discrete" '
-            f'keyTimes="0;{at(begin)};{at(hide)}" values="0;1;0"/></text>'
+            f"{shown(begin, hide)}</text>"
         )
-    def swap_at(seconds, before, after):
-        """Two copies of a piece of text, crossfading from one to the other at a moment."""
-        show = f'keyTimes="0;{at(seconds)};{at(seconds + 0.6)};1"'
-        return (
-            before.replace("<text ", f'<text opacity="1" ', 1).replace(
-                "</text>", f'<animate attributeName="opacity" dur="{total:.2f}s" repeatCount="indefinite" {show} values="1;1;0;0"/></text>'
-            )
-            + after.replace("<text ", f'<text opacity="0" ', 1).replace(
-                "</text>", f'<animate attributeName="opacity" dur="{total:.2f}s" repeatCount="indefinite" {show} values="0;0;1;1"/></text>'
-            )
-        )
+
+    def crossfade(seconds, before, after):
+        """Two copies of a piece of text that swap at a moment, and swap back on the return."""
+        out_moments = [(seconds, 1), (seconds + 0.6, 0)]
+        in_moments = [(seconds, 0), (seconds + 0.6, 1)]
+        first = before.replace("<text ", '<text opacity="1" ', 1).replace("</text>", eased("opacity", out_moments) + "</text>")
+        second = after.replace("<text ", '<text opacity="0" ', 1).replace("</text>", eased("opacity", in_moments) + "</text>")
+        return first + second
 
     segments = 2 ** FOLDS
     lines = {
@@ -341,8 +359,8 @@ def build():
         "fact": "Fold a strip of paper in half 12 times,",
         "fact2": "open every fold to a right angle,",
         "fact3": f"and its {segments:,} edges draw a dragon.",
-        "name": "HEIGHWAY DRAGON",
         "fact3b": "then the same line spells my initials.",
+        "name": "HEIGHWAY DRAGON",
         "nameb": "ADRIAN JOEL JASPA",
     }
     display = lines["label"] + lines["name"] + lines["nameb"] + "".join(f"{k:02d}" for k in range(1, FOLDS + 1))
@@ -350,11 +368,17 @@ def build():
     styles = font_face("Display", FONTS / "Rajdhani-SemiBold.woff2", display) + font_face(
         "Body", FONTS / "Barlow-Regular.woff2", body
     )
-    fade = (
-        f'<animate attributeName="opacity" dur="{total:.2f}s" repeatCount="indefinite" '
-        f'keyTimes="0;{at(morph_end + HOLD)};{at(total)};1" values="1;1;0;0"/>'
+    fact3 = crossfade(
+        morph_start,
+        f'<text x="56" y="344" font-family="Body" font-size="19" fill="{SOFT}">{lines["fact3"]}</text>',
+        f'<text x="56" y="344" font-family="Body" font-size="19" fill="{SOFT}">{lines["fact3b"]}</text>',
     )
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="A gold Heighway dragon curve folds itself twelve times, then its single line flows into the letters AJS.">
+    name = crossfade(
+        morph_end - 0.6,
+        f'<text x="56" y="396" font-family="Display" font-size="15" letter-spacing="5" fill="{MUTED}">{lines["name"]}</text>',
+        f'<text x="56" y="396" font-family="Display" font-size="15" letter-spacing="5" fill="{GOLD}">{lines["nameb"]}</text>',
+    )
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="A gold Heighway dragon curve folds itself twelve times and its single line flows into the letters AJS, then it all unwinds back to one line.">
 <defs>
 <style>{styles}text{{font-variant-ligatures:none}}</style>
 <radialGradient id="glow" cx="72%" cy="48%" r="55%"><stop offset="0" stop-color="#3a2410"/><stop offset="1" stop-color="{INK}"/></radialGradient>
@@ -363,15 +387,15 @@ def build():
 <g clip-path="url(#frame)">
 <rect width="{W}" height="{H}" fill="url(#glow)"/>
 <g fill="none" stroke="{GOLD}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
-<g>{fade}{''.join(layers)}</g>
+{''.join(layers)}
 </g>
 <text x="56" y="70" font-family="Body" font-size="17" fill="{MUTED}">{lines['prompt']}</text>
 <text x="56" y="112" font-family="Display" font-size="18" letter-spacing="6" fill="{GOLD}">{lines['label']}</text>
 {''.join(counters)}
 <line x1="56" y1="246" x2="110" y2="246" stroke="{GOLD}"/>
 <text font-family="Body" font-size="19" fill="{SOFT}"><tspan x="56" y="288">{lines['fact']}</tspan><tspan x="56" y="316">{lines['fact2']}</tspan></text>
-{swap_at(morph_start, f'<text x="56" y="344" font-family="Body" font-size="19" fill="{SOFT}">{lines["fact3"]}</text>', f'<text x="56" y="344" font-family="Body" font-size="19" fill="{SOFT}">{lines["fact3b"]}</text>')}
-{swap_at(morph_end, f'<text x="56" y="396" font-family="Display" font-size="15" letter-spacing="5" fill="{MUTED}">{lines["name"]}</text>', f'<text x="56" y="396" font-family="Display" font-size="15" letter-spacing="5" fill="{GOLD}">{lines["nameb"]}</text>')}
+{fact3}
+{name}
 </g>
 <rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="10" fill="none" stroke="{LINE}"/>
 <path d="M1 30V1h29M{W - 1} {H - 30}V{H - 1}h-29" fill="none" stroke="{GOLD}" stroke-width="3"/>
