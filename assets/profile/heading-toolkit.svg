@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="64" viewBox="0 0 1200 64" role="img" aria-label="Section 03: Toolkit">
+<defs><style>@font-face{font-family:'Display';src:url(data:font/woff2;base64,d09GMgABAAAAAAPEAA4AAAAAB6gAAANxAAEzdQAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbEBwaBmAAZBEICoR0hBUBNgIkAygLFgAEIAWEWgcgGzwGIK4K7MbHG0IgDCyMJBtCO1JF539GlQjqx35777skvNJMGkks4glKfwnLTCfSGo1QqVT8J/+sF2L+njArYCbQSqF/clbRCLVQnYtOMhbsdh9DIol5+R8OUKa+WZu7O/1+s/4H3RNH0lRIlE5JYg8RqeIWCi27b/EfpW+LS9WtG9WZtTlKy9sjPUmgCUhCqAmBuqY2gHvHZuBc3yStIAZQjBfcQQLSo0oF9t4KcaWsMoBEOMPcnddlgPMwo/fs/49m4pylvSL+tgaYIUZCAUM8ATT4joEuNR5mlChHaBn0fjGj2IlogM+1Ky45bVGQ54f4VwfUwRCo4w34BKAIIC5LH4zItlxdL5/PKHfNkEk3zz5+p3yHrLFlxujWAdkWTmGVtL4ZUu4r8PqAN4LwWtdeHemY8J4ma0ZOfDa5t+muSudoOasoBPKZBvEU/QQfslJYJdPjIDV2zB7Z2zo4tC0lddZwL6xUNMlQzIs1fCzBEO3jk7W2gP9VUMyx2qnWgeNvfFFVXYr54ZgJnvZ299BO2qNk7Ox1UJOJ6IhipA6C6O4xwV1fNSUVPbQ+MzVrLkItCM0nJgMdoKWcVA8aphuYsTqfNp3JOZ1JzUzLrKc91YRWI1TIwKGoFaFmhGCCbcYdqJG3/fv681Q69fJF8R3z8Rk1s/ceaB9eHMvD7e44AknlLxFTgeBF7wChnZQMHJd+sJelRsSIY2nGr8ugFKl0OajliImHl8ukKejdoiQWE2ePbtVNqBq+iSW8l4DX56IvgHfm2S5t0gSPq0ogeNnadJKAVEcAh8B68ItY6D2IJ5ifGur6qdg/+mUA6SLsLAeaOwZtgbpNXBBkU8UZnihKgFtgssKc9ayk7YVVsOZUZzGNVfLh/f9fNtd92BYWsUiMl5sHC8thlwsrU6JUBYwIcfCyCsF6LRLhhHUJSwhxiFkEy+EV4hLWwjtNyXK3ixcVsQsLymVm5WOsh+aFWWDQgG2AAWw2c3JLCLCKKVV0wI+uR/TqYlC/EPtC0P/emDivsBBcnUYWZ36Jeh5h7BHdIckQukWq1agXZOXnFMZyKRLgZVOmSKUiVUrVKocNY9M2sEpghXl4hS5anlxYXnrd8YUCsGoDxOxlairoJlcqAQvJpcpBBwzAzgqlApfVwdl0Vi6wYNjuS9HzCLd/LQAAAA==) format('woff2');}text{font-variant-ligatures:none}</style>
+<clipPath id="panel"><rect width="1200" height="64" rx="10"/></clipPath></defs>
+<g clip-path="url(#panel)"><rect width="1200" height="64" fill="#100b07"/>
+<text x="56" y="39" font-family="Display" font-size="16" letter-spacing="5" fill="#7d705d">// 03</text>
+<text x="132" y="40" font-family="Display" font-size="22" letter-spacing="7" fill="#f4eee2">TOOLKIT</text>
+<path d="M276 33h884" stroke="#5a4325" stroke-width="1"/>
+<path d="M276 33h884" stroke="#f0bb66" stroke-width="1.5" stroke-dasharray="884" stroke-dashoffset="884">
+<animate attributeName="stroke-dashoffset" dur="6s" repeatCount="indefinite" keyTimes="0;.3;.8;1" values="884;0;0;-884"/></path>
+<circle cx="276" cy="33" r="3" fill="#ffe1a8">
+<animate attributeName="cx" dur="6s" repeatCount="indefinite" keyTimes="0;.3;1" values="276;1160;1160"/>
+<animate attributeName="opacity" dur="6s" repeatCount="indefinite" keyTimes="0;.28;.34;1" values="1;1;0;0"/></circle></g>
+<rect x=".5" y=".5" width="1199" height="63" rx="10" fill="none" stroke="#5a4325"/>
+
+</svg>

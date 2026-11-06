@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="64" viewBox="0 0 1200 64" role="img" aria-label="Section 02: Selected Work">
+<defs><style>@font-face{font-family:'Display';src:url(data:font/woff2;base64,d09GMgABAAAAAAUMAA4AAAAACgQAAAS4AAEzdQAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbEBwaBmAAbBEICoksh20BNgIkAzwLIAAEIAWEWgcgGzAIUZQOTpjgiwO74fOGoCpe66iBeERoPLs/FX8QWy8WyjTiX4bu3u8ecmFxqB1PsKipQNmpVL0iCNX+sL88KILxxROx+gHlIbYt76c6/TepZzbJzlTmbqFNQZ+Ca/oFHQvfvqT8DwfI29zdq7FVb/FkFjVEQiFROiUdvqgtOh1eXEr7SkivnixpKB8S9fOriHc6U4fLPyQYAkrEWAR9Q2MgfO1amvv9Y6wRQgCaeVsf/NQval0eusybWsK4Ssc1Lr1/zCqEf+DdOHA8AuRTRTXlKPuM7KaDmtjAklcw7VN/3lyYV9mpqFk6OHt4nwR2ymrm9s5usv9gN92wYNqi6JQiTlpKANicMePKgfzZ+GyzWgl4U3/60e9ScLy/D6fwcGYcb88l2ngQrLe/+DB8JyGTNjXbyskkMtBhrIfSqrD+To53CXi7Hn8rF+kKy2cRUnOcAlqM9Qj9CbRF0jEgnwRazOnlNvwGfudcxHkcuHzNrXFrkpFuQi4wyTk98lrmVQpYmJfHSARpD4AiO+2r11KqqNyu2rKrkkBri5FYU3PRmwxY9c6cJFDZi5RNyqr966jRlmeyaeLZldSVO539ENpybOaoJqgO3759+TbA1qJ3pvISZ6/xyqZWjvV2dTsImbStJfVbU7RE/8V4N/UuXLFtKNaysfzix65BZZx5ybPaYnglZeeImWIOjNoltYjFxUJ+ZCoSWwSW/+hiCKlJEqa2/w5zzckN9aJenoymUOZNKBWKBf4hgm/B/OyuJjsXw4pF9q9nUDAiFlljRYKRRghjyWUzQMwpn8oL/QMYTWYsZBS6JK2WHr+a4CXSkN5I6R/hNoMjSoqFPxR2pFBaXZHC03DKv+LwcczNM56MzZsvEO4VT7A9WZnD4xMNdvyZwfssRcsbC6YPSy7axNjvO6UoqLngy/dk3Ewx946yCApvpXJBzBSF5e0+Lc0/Jh5BYIzf8EEoKRGk4TpHw773B22SbBq6Xrdy+BHFWRpRkERRQ/BNDAk77ShNoZT5Zfhn+pcFWLsYZmOVebZtSHaMn6NUlziIWFFlcv9nJPtnBTsHpihXMswyzde5p4V4xycPCKUl8D+ZUXOM1VuODMPL1QSbUyBdzGWsgTfPN4ciYjwqd+IlPmhMblyEkexQC9exehfaRV0G/hs2q1x+p69B4aPq9w4L9cqE36ZmBu8AAK6+MfkJwFv2ejeMAQz4pGYKMmP//9W5GyjA1ID9LB+hlFXABHwBQJvgXMZDHHoLITIHSJb5g4CegSDzQFhAH1nEif9wIrqg17jhJsGNibtJF+jc1fHEK00z4BOePc782MvYwd5w6W91k2pv+ffl49vO8sScROZQMSg0HcjAZIGaiqoGsCXCE0TwZvDgkBHAisSgkMpx0C1DRJJMMKYxPVlLJleVYCSCrBsEmwhpMwPcUeDgLEQ+vPuGQDHwEKqq0iKxn3T+sHLWd+a8CK+SSvMPSkRQVy/ukokVfTSJvsy6yJTfVNLW0SdAcAgqktUoHgNV40NzYEtVV90dAd0vIQwkCX08vsOOmM4j1SMvFfEQaXNApZpOCmtNUwVsTVWdLbxHQjqRDuRAHMGEmIO1xfXBEK+Ou9NvFwAAAAA=) format('woff2');}text{font-variant-ligatures:none}</style>
+<clipPath id="panel"><rect width="1200" height="64" rx="10"/></clipPath></defs>
+<g clip-path="url(#panel)"><rect width="1200" height="64" fill="#100b07"/>
+<text x="56" y="39" font-family="Display" font-size="16" letter-spacing="5" fill="#7d705d">// 02</text>
+<text x="132" y="40" font-family="Display" font-size="22" letter-spacing="7" fill="#f4eee2">SELECTED WORK</text>
+<path d="M393 33h767" stroke="#5a4325" stroke-width="1"/>
+<path d="M393 33h767" stroke="#f0bb66" stroke-width="1.5" stroke-dasharray="767" stroke-dashoffset="767">
+<animate attributeName="stroke-dashoffset" dur="6s" repeatCount="indefinite" keyTimes="0;.3;.8;1" values="767;0;0;-767"/></path>
+<circle cx="393" cy="33" r="3" fill="#ffe1a8">
+<animate attributeName="cx" dur="6s" repeatCount="indefinite" keyTimes="0;.3;1" values="393;1160;1160"/>
+<animate attributeName="opacity" dur="6s" repeatCount="indefinite" keyTimes="0;.28;.34;1" values="1;1;0;0"/></circle></g>
+<rect x=".5" y=".5" width="1199" height="63" rx="10" fill="none" stroke="#5a4325"/>
+
+</svg>

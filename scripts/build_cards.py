@@ -12,14 +12,11 @@ import base64
 import io
 import random
 from html import escape
-from pathlib import Path
 
-from fontTools import subset
-from fontTools.ttLib import TTFont
 from PIL import Image, ImageOps, ImageStat
 
-ROOT = Path(__file__).resolve().parent.parent
-FONTS = ROOT / "assets" / "fonts"
+from svgkit import BRIGHT, FONTS, ROOT, font_face
+
 SOURCE = ROOT / "assets" / "source"
 OUT = ROOT / "assets" / "cards"
 
@@ -66,22 +63,6 @@ CARDS = [
         "picture": None,
     },
 ]
-
-
-def font_face(family: str, path: Path, text: str) -> str:
-    """A @font-face rule holding only the glyphs this card needs."""
-    font = TTFont(path)
-    options = subset.Options()
-    options.flavor = "woff2"
-    options.layout_features = ["kern", "liga"]
-    subsetter = subset.Subsetter(options)
-    subsetter.populate(text=text)
-    subsetter.subset(font)
-    data = io.BytesIO()
-    font.flavor = "woff2"
-    font.save(data)
-    encoded = base64.b64encode(data.getvalue()).decode()
-    return f"@font-face{{font-family:'{family}';src:url(data:font/woff2;base64,{encoded}) format('woff2');}}"
 
 
 def picture(name: str) -> str:
@@ -164,16 +145,27 @@ def card(spec: dict) -> str:
         ]
     )
     bracket = 26
+    # Cards take turns: a scan line crosses each picture in sequence, every few seconds.
+    delay = (int(spec["number"]) - 1) * 1.6
+    scan = (
+        f'<rect x="-40" y="0" width="40" height="{PICTURE_H}" fill="url(#beam)">'
+        f'<animate attributeName="x" dur="6.4s" begin="{delay}s" repeatCount="indefinite" keyTimes="0;.28;1" values="-40;{W};{W}"/></rect>'
+    )
+    pulse = '<animate attributeName="opacity" dur="3.2s" repeatCount="indefinite" values="1;.4;1"/>'
+    nudge = '<animateTransform attributeName="transform" type="translate" dur="2.4s" repeatCount="indefinite" values="0 0;4 0;0 0"/>'
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="{escape(spec['title'])}: {escape(spec['tagline'])}">
 <defs>
 <style>{styles}</style>
 <clipPath id="frame"><rect width="{W}" height="{H}" rx="10"/></clipPath>
 <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
 <stop offset=".45" stop-color="{INK}" stop-opacity="0"/><stop offset="1" stop-color="{INK}"/></linearGradient>
+<linearGradient id="beam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{BRIGHT}" stop-opacity="0"/>
+<stop offset=".85" stop-color="{BRIGHT}" stop-opacity=".22"/><stop offset="1" stop-color="{BRIGHT}" stop-opacity=".9"/></linearGradient>
 </defs>
 <g clip-path="url(#frame)">
 <rect width="{W}" height="{H}" fill="{INK}"/>
 <g opacity=".88">{art}</g>
+{scan}
 <rect width="{W}" height="{PICTURE_H + 2}" fill="url(#fade)"/>
 <text x="36" y="372" font-family="Display" font-size="22" letter-spacing="3" fill="{GOLD}">{spec['number']}</text>
 <line x1="70" y1="365" x2="96" y2="365" stroke="{GOLD}" stroke-opacity=".6"/>
@@ -181,11 +173,10 @@ def card(spec: dict) -> str:
 <text x="36" y="452" font-family="Body" font-size="21" letter-spacing=".4" fill="{SOFT}">{escape(spec['tagline'])}</text>
 {chips}
 <circle cx="786" cy="470" r="26" fill="{INK}" fill-opacity=".7" stroke="{GOLD}" stroke-opacity=".7"/>
-<path d="M774 470h22m-8-8 8 8-8 8" fill="none" stroke="{GOLD}" stroke-width="2"/>
+<path d="M774 470h22m-8-8 8 8-8 8" fill="none" stroke="{GOLD}" stroke-width="2">{nudge}</path>
 </g>
 <rect x=".5" y=".5" width="{W - 1}" height="{H - 1}" rx="10" fill="none" stroke="{LINE}"/>
-<path d="M1 {bracket}V1h{bracket}" fill="none" stroke="{GOLD}" stroke-width="3"/>
-<path d="M{W - 1} {H - bracket}V{H - 1}h-{bracket}" fill="none" stroke="{GOLD}" stroke-width="3"/>
+<path d="M1 {bracket}V1h{bracket}M{W - 1} {H - bracket}V{H - 1}h-{bracket}" fill="none" stroke="{GOLD}" stroke-width="3">{pulse}</path>
 </svg>
 """
 
