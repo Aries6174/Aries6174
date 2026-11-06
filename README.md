@@ -1,4 +1,4 @@
-<!-- Step 3 adds an animated black hole hero here. -->
+<p align="center"><img src="assets/hero.svg" width="100%" alt="A gold Heighway dragon curve folding itself twelve times, beside a terminal prompt."></p>
 
 <h1 align="center">Adrian Joel Jaspa</h1>
 
@@ -14,15 +14,19 @@
   <a href="https://adrian-js.vercel.app/Jaspa_Resume.pdf">Resume</a>
 </p>
 
-<!-- Step 2 replaces this list with linked project cards. -->
+<p align="center">
+  <a href="https://adrian-js.vercel.app"><img src="assets/cards/adrian-js.svg" width="49%" alt="ADRIAN.JS: my portfolio, five 3D worlds you can explore. Built with Next.js, Three.js and TypeScript."></a>
+  <a href="https://codewall-rust.vercel.app/"><img src="assets/cards/codewall.svg" width="49%" alt="Codewall: a code editor that types by itself. Built with Next.js, TypeScript and Tailwind CSS."></a>
+</p>
+<p align="center">
+  <a href="https://taskflow-task.vercel.app/"><img src="assets/cards/taskflow.svg" width="49%" alt="TaskFlow: a full-stack task manager, fully tested. Built with Next.js, PostgreSQL and Playwright."></a>
+  <a href="https://adrian-js.vercel.app/projects"><img src="assets/cards/up-visions.svg" width="49%" alt="UP: Visions: my thesis, an educational visual novel. Built with Ren'Py and Python."></a>
+</p>
 
-## Projects
-
-- **[ADRIAN.JS](https://adrian-js.vercel.app)**: my portfolio, a set of 3D worlds built with Three.js and Next.js.
-- **[Codewall](https://codewall-rust.vercel.app/)**: a live code editor that types by itself, with a working terminal. [Code](https://github.com/Aries6174/codewall)
-- **[TaskFlow](https://taskflow-task.vercel.app/)**: a full-stack task manager, covered by Jest and Playwright tests.
-- **UP: Visions**: my thesis, an educational visual novel in Ren'Py, tested with 64 students.
+<p align="center"><sub>Codewall's code is at <a href="https://github.com/Aries6174/codewall">Aries6174/codewall</a>. UP: Visions was tested with 64 students.</sub></p>
 
 ## Stack
 
 TypeScript · JavaScript · React · Next.js · Three.js · Tailwind CSS · PostgreSQL · Java · C# · PHP
+
+<sub>The dragon and the cards are built by <code>scripts/build_hero.py</code> and <code>scripts/build_cards.py</code>. Fonts: Rajdhani and Barlow, under the SIL Open Font License (see <code>assets/fonts</code>).</sub>
